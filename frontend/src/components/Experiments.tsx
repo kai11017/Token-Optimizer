@@ -4,7 +4,6 @@ import { Copy, ArrowDown, Trash2, ChevronDown } from 'lucide-react'
 export default function Experiments() {
   const [history, setHistory] = useState<any[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [activeFilter, setActiveFilter] = useState('ALL')
   const [sortBy, setSortBy] = useState<'DATE' | 'RATIO' | 'SAVED'>('DATE')
 
   useEffect(() => {
@@ -45,8 +44,6 @@ export default function Experiments() {
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
   }
-
-  const filters = ['ALL', 'CODE', 'SUMMARIZE', 'RESEARCH']
 
   const sortedHistory = [...history].sort((a, b) => {
     if (sortBy === 'DATE') {
@@ -149,7 +146,7 @@ export default function Experiments() {
 
         {/* Table Body */}
         <div className="divide-y divide-zinc-800/40">
-          {sortedHistory.map((run, i) => (
+          {sortedHistory.map((run) => (
             <div key={run.id} className="flex flex-col group/row">
               {/* Row */}
               <div 

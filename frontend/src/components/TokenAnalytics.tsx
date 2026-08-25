@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 
 export default function TokenAnalytics({ results }: any) {
   if (!results) return null;
@@ -41,14 +41,6 @@ export default function TokenAnalytics({ results }: any) {
       name: 'Output Tokens', 
       Original: results.original.outputTokens, 
       Optimized: results.optimized.outputTokens 
-    },
-  ];
-
-  const latencyData = [
-    { 
-      name: 'Latency (s)', 
-      Original: parseFloat(origLatency.toFixed(2)), 
-      Optimized: parseFloat(optLatency.toFixed(2)) 
     },
   ];
 

@@ -17,7 +17,7 @@ When a user submits a prompt, it goes through a multi-step pipeline:
 
 1. **Input Analysis**: The raw prompt is sent to the backend, where it is tokenized to determine the baseline cost and length.
 2. **LLM-Based Compression**: The backend (Python/FastAPI) uses a local LLM (like Llama 3 via Ollama) to semantically compress the prompt. The model is specifically instructed to replace verbose phrasing with shorthand (e.g., "$PY" for Python, "$FN" for function) and strip non-essential filler words.
-3. **Validation & Quality Check**: The optimized prompt is compared against the original to ensure core instructions and intent were not lost during compression.
+3. **Validation & Quality Check**: The optimized prompt is compared against the original to ensure core instructions and intent were not lost during compression. This is verified by computing semantic similarity using the `all-MiniLM-L6-v2` model via `sentence-transformers`.
 4. **Metrics Calculation**: The system calculates the new token count, the raw number of tokens saved, and the percentage reduction ratio.
 5. **Storage & Delivery**: The final optimized prompt and its associated metrics are returned to the frontend (and saved to local history) for the user to review.
 
@@ -45,6 +45,7 @@ graph TD
 - **Node.js (Express)**: Acts as the primary API Gateway, serving as a lightweight and fast middle layer to handle CORS, routing, and basic request validation.
 - **Python (FastAPI)**: Runs the core `optimizer_pipeline.py`. Python is the industry standard for AI/ML tasks, and FastAPI provides high performance and automatic API documentation for the Python microservice.
 - **Ollama (Llama 3)**: Runs the LLM locally. This ensures privacy, zero API costs during development, and low latency for the actual prompt compression tasks.
+- **Sentence Transformers**: Utilizes the `all-MiniLM-L6-v2` model in the Python backend to compute cosine similarity scores, ensuring the optimized prompt retains the original semantic meaning.
 
 ## How to Run the Project
 

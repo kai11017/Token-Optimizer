@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { MessageSquare, Send, Plus, Trash2, Bot, User, Wand2, Menu } from 'lucide-react'
+import { MessageSquare, Send, Plus, Trash2, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { supabase, hasSupabase } from '@/lib/supabaseClient'
