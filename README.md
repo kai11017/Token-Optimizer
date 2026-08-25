@@ -1,101 +1,70 @@
-# Token Optimizer
+# Token Optimizer (TokenLab) Architecture & Overview
 
-Welcome to the **Token Optimizer** project! This repository houses a cutting-edge, multi-layer AI pipeline designed to intelligently compress and optimize LLM prompts, alongside a full-stack CRM and Lead Generation platform.
+## What This Website Does
+TokenLab is a specialized platform designed to compress, optimize, and analyze LLM (Large Language Model) prompts. It reduces the token count of prompts while preserving their semantic meaning and intent. This helps developers and prompt engineers save on API costs and fit more information into limited LLM context windows.
 
-## 🚀 Project Overview
+The application provides:
+- A **Chat Interface** for real-time testing of prompts.
+- A **Playground (Prompt Lab)** for directly comparing original and optimized prompts, viewing token savings, and analyzing reduction ratios.
+- An **Experiment History** tracking past optimizations, token savings, and overall compression metrics.
 
-The core of this project is the **5-Layer Token Optimizer Pipeline** which reduces token usage while maintaining cognitive alignment and deterministic execution for large language models (like Gemini 1.5 Pro). 
+## The Optimization Pipeline
+When a user submits a prompt, it goes through a multi-step pipeline:
 
-Additionally, the project features a comprehensive full-stack architecture designed for AI-driven lead generation, campaign management, and automated outreach via integrations like Gmail and LinkedIn.
+1. **Input Analysis**: The raw prompt is sent to the backend, where it is tokenized to determine the baseline cost and length.
+2. **LLM-Based Compression**: The backend (Python/FastAPI) uses a local LLM (like Llama 3 via Ollama) to semantically compress the prompt. The model is specifically instructed to replace verbose phrasing with shorthand (e.g., "$PY" for Python, "$FN" for function) and strip non-essential filler words.
+3. **Validation & Quality Check**: The optimized prompt is compared against the original to ensure core instructions and intent were not lost during compression.
+4. **Metrics Calculation**: The system calculates the new token count, the raw number of tokens saved, and the percentage reduction ratio.
+5. **Storage & Delivery**: The final optimized prompt and its associated metrics are returned to the frontend (and saved to local history) for the user to review.
 
-### The 5-Layer Pipeline (`test.py`)
-1. **Layer 1: Deterministic Ingestion & The τ-Threshold Router** (NFKC Normalization)
-2. **Layer 2: Edge-Distributed XML Masking** (Lightweight NLP syntax targeting)
-3. **Layer 3: SLM Pruning & Cognitive Alignment** (Aggressive distillation)
-4. **Layer 4: Swarm Quantization & The HLMV** (Hierarchical Latent Memory Vault)
-5. **Layer 4.5 & 5: Circuit Breaker & Flagship Execution** (Zero-latency verification and API execution)
-
-## 🛠️ Technologies Used
+## Tech Stack & Rationale
 
 ### Frontend
-- **React.js**: UI Library
-- **Vite**: Frontend build tool and development server
+- **React (Vite)**: Chosen for its fast development server, HMR (Hot Module Replacement), and component-based architecture which makes building interactive UI elements (like the Playground and Chat) highly efficient.
+- **Tailwind CSS**: Used for rapid UI styling. It allows for highly customized, utility-first designs without leaving the HTML/JSX. The project features a distinct dark, retro, "Pokémon-inspired" aesthetic utilizing custom CSS variables and Tailwind extensions.
+- **TypeScript**: Provides static typing to catch errors at compile-time, ensuring robust data handling for complex objects like experiment history and API responses.
+- **Lucide-React**: A clean, lightweight icon library that fits the modern aesthetic of the application.
 
-### Backend & AI Agents
-- **Node.js / Express**: Core backend API for the CRM (Controllers, Models, Routes)
-- **Python / FastAPI**: AI Agent orchestrator (`agents/main.py`)
-- **spaCy**: NLP library used for Edge-Distributed XML Masking
+### Backend
+- **Node.js (Express)**: Acts as the primary API Gateway, serving as a lightweight and fast middle layer to handle CORS, routing, and basic request validation.
+- **Python (FastAPI)**: Runs the core `optimizer_pipeline.py`. Python is the industry standard for AI/ML tasks, and FastAPI provides high performance and automatic API documentation for the Python microservice.
+- **Ollama (Llama 3)**: Runs the LLM locally. This ensures privacy, zero API costs during development, and low latency for the actual prompt compression tasks.
 
-### Database & Infrastructure
-- **SQL**: Database schema (`database/schema.sql`)
-- **Docker**: Containerization and local environment setup (`docker/docker-compose.yml`)
+## How to Run the Project
 
-### Integrations
-- **Apollo, Gmail, HubSpot, LinkedIn**: Custom integrations for lead fetching and automated outreach.
+This project consists of three main components that need to run concurrently: the Python AI service, the Node.js API Gateway, and the React frontend.
 
-## 📁 Project Structure
-
-```text
-TOKEN-OPTIMIZER/
-├── agents/                  # Python FastAPI service for AI Agents & Orchestration
-├── backend/                 # Node.js backend (Controllers, Routes, Models, Services)
-├── database/                # SQL schemas and database configuration
-├── docker/                  # Docker Compose configurations
-├── frontend/                # React + Vite frontend application
-├── integrations/            # 3rd-party service clients (Apollo, Gmail, HubSpot, LinkedIn)
-├── prompts/                 # Text prompts for AI behavior (scoring, emails, research)
-├── workers/                 # Background workers (email, followup, linkedin)
-├── test.py                  # Core standalone implementation of the 5-Layer Token Optimizer
-├── protected_operators.json # Configurations for quantization map
-├── quantization_map.json    # HLMV Semantic tokens mappings
-└── README.md                # Project documentation
-```
-
-## 🏃 How to Run the App
-
-### 1. Running the 5-Layer Token Optimizer Pipeline (Standalone)
-The standalone optimizer pipeline requires Python and `spaCy`.
+### 1. Python FastAPI Backend (AI Service)
+The Python backend handles the core LLM optimization logic.
 ```bash
+# Create and activate a virtual environment (optional but recommended)
+python -m venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Mac/Linux:
+source .venv/bin/activate
+
 # Install dependencies
-pip install requests spacy fastapi uvicorn
+pip install fastapi uvicorn pydantic
 
-# Download spaCy NLP model
-python -m spacy download en_core_web_sm
-
-# Run the optimizer terminal interface
-python test.py
+# Run the server from the root directory
+python -m uvicorn agents.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 2. Running via Docker (Recommended for Full-Stack)
-If you want to spin up the entire stack (Frontend, Node Backend, Python Agents, Database):
+### 2. Node.js Backend (API Gateway)
+The Node API handles routing, CORS, and automatically spins up Ollama for the Llama 3 model.
 ```bash
-cd docker
-docker-compose up --build
+cd backend
+npm install
+node server.js
 ```
-*(Note: Ensure Docker Desktop is running before executing this command.)*
+*Note: Make sure you have [Ollama](https://ollama.com/) installed on your machine so the Node server can start it successfully.*
 
-### 3. Running Services Locally (Manual Setup)
-
-**Frontend:**
+### 3. Frontend (React / Vite)
+The Vite server serves the actual UI.
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-**Node.js Backend:**
-```bash
-cd backend
-npm install
-npm start   # or node server.js
-```
-
-**Python AI Agents API:**
-```bash
-cd agents
-pip install fastapi uvicorn
-uvicorn main:app --reload --port 8000
-```
-
-## 🤝 Contributing
-Feel free to open issues or submit pull requests. Ensure that you test your changes thoroughly against the `test.py` pipeline.
+Once all three servers are running, simply open the `localhost` URL provided by Vite (usually `http://localhost:5173`) in your browser!
