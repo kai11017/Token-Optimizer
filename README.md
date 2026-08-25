@@ -2,7 +2,7 @@
 
 ## Demo
 
-<video src="./demo.mp4" autoplay loop muted playsinline width="100%"></video>
+![Demo](./demo.gif)
 
 ## What This Website Does
 TokenLab is a specialized platform designed to compress, optimize, and analyze LLM (Large Language Model) prompts. It reduces the token count of prompts while preserving their semantic meaning and intent. This helps developers and prompt engineers save on API costs and fit more information into limited LLM context windows.
